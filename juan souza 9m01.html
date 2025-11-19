@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Banco de Talentos - Oportunidades para Idosos</title>
+  <meta name="description" content="Plataforma para conectar pessoas com 60+ a oportunidades de trabalho compatíveis com seus conhecimentos e experiência." />
+  <style>
+    :root{
+      --bg:#f7fbff; --card:#ffffff; --accent:#0b5cff; --muted:#555; --max-width:980px; --sidebar-width:220px;
+    }
+
+    *{box-sizing:border-box;}
+    html, body{margin:0;padding:0;height:100%;font-family:Inter,system-ui,Segoe UI,Arial;background:var(--bg);color:#111;}
+    
+    body{display:flex;flex-direction:row;position:relative;}
+
+    /* Sidebar */
+    .sidebar{
+      width:var(--sidebar-width);
+      background:var(--card);
+      border-right:1px solid #ddd;
+      display:flex;
+      flex-direction:column;
+      padding:16px 0;
+      height:100vh;
+      position:fixed;
+    }
+    .sidebar h2{
+      font-size:18px;
+      text-align:center;
+      margin-bottom:24px;
+    }
+    .sidebar button{
+      border:none;
+      background:none;
+      padding:12px 20px;
+      text-align:left;
+      font-size:16px;
+      cursor:pointer;
+      color:var(--accent);
+      font-weight:600;
+    }
+    .sidebar button.active{
+      background:var(--accent);
+      color:#fff;
+      border-radius:8px;
+    }
+
+    /* Conteúdo */
+    .main{
+      margin-left:var(--sidebar-width);
+      padding:20px;
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      position:relative;
+    }
+    .tab{display:none;}
+    .tab.active{display:block;}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(12,22,45,0.06);margin-bottom:20px;}
+
+    h1{font-size:24px;margin-top:0;}
+    p.lead{font-size:14px;margin:6px 0;color:var(--muted);}
+
+    /* Formulários */
+    form{display:flex;flex-direction:column;gap:10px}
+    label{font-weight:600;font-size:14px}
+    input[type=text],input[type=email],input[type=tel],select,textarea{padding:10px;border:1px solid #d7e2ff;border-radius:8px;font-size:14px}
+    textarea{min-height:100px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .small{font-size:13px;color:var(--muted)}
+    .actions{display:flex;gap:10px;align-items:center}
+    button{background:var(--accent);color:#fff;padding:10px 14px;border:0;border-radius:10px;font-weight:700;cursor:pointer}
+    button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+
+    /* Banco de Talentos */
+    .vaga{border-left:4px solid var(--accent);padding:10px 12px;background:#fbfdff;border-radius:8px;margin-bottom:10px;}
+    .vaga strong{display:block;font-size:15px;margin-bottom:4px;}
+
+    /* Rodapé */
+    footer{
+      margin-top:auto;
+      background:#f1f1f1;
+      padding:14px 20px;
+      font-size:13px;
+      color:var(--muted);
+      text-align:center;
+      border-top:1px solid #ddd;
+    }
+
+    /* Ícone de usuário com destaque */
+    #userIcon{
+      position:fixed;
+      top:16px;
+      right:16px;
+      cursor:pointer;
+      font-size:28px;
+      z-index:1000;
+      transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
+      border: 3px solid var(--accent);
+      border-radius:50%;
+      padding:6px;
+      background:#fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #userIcon:hover{
+      transform: scale(1.15);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+      border-color: #0041a8;
+    }
+
+    /* Pop-up do usuário */
+    #userPopup{
+      position:fixed;
+      top:70px;
+      right:16px;
+      width:250px;
+      background:#fff;
+      border:1px solid #0b5cff;
+      border-radius:12px;
+      box-shadow:0 6px 18px rgba(12,22,45,0.15);
+      padding:16px;
+      display:none;
+      opacity:0;
+      transform:translateY(-10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index:1000;
+    }
+    #userPopup img{
+      border-radius:50%;
+      width:80px;
+      height:80px;
+      border:2px solid #0b5cff;
+      display:block;
+      margin:0 auto 12px;
+    }
+    #userPopup p{
+      margin:4px 0;
+      font-size:14px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Menu</h2>
+    <button class="tablink active" data-target="sobreTab">Sobre</button>
+    <button class="tablink" data-target="cadastroTab">Cadastro</button>
+    <button class="tablink" data-target="vagasTab">Banco de Talentos</button>
+  </div>
+
+  <!-- Conteúdo principal -->
+  <div class="main">
+    <!-- Ícone de usuário -->
+    <div id="userIcon">👤</div>
+    
+    <!-- Pop-up de informações do usuário -->
+    <div id="userPopup">
+      <img src="https://via.placeholder.com/80" alt="Usuário">
+      <p><strong>Nome:</strong> Maria Silva</p>
+      <p><strong>Idade:</strong> 62</p>
+      <p><strong>Data de Nascimento:</strong> 15/03/1963</p>
+      <p><strong>Email:</strong> maria.silva@gmail.com</p>
+    </div>
+
+    <!-- Sobre -->
+    <section id="sobreTab" class="tab active card">
+      <h1>Sobre esta iniciativa</h1>
+      <p class="lead">Conectando experiência a vagas compatíveis para pessoas com 60 anos ou mais. Nosso objetivo é valorizar competências adquiridas ao longo da vida — conhecimento técnico, resiliência, ética de trabalho e relacionamento interpessoal.</p>
+      <p>Vantagens de empregar idosos:</p>
+      <ul>
+        <li><strong>Experiência consolidada:</strong> Histórico de resolução de problemas e maturidade emocional.</li>
+        <li><strong>Estabilidade e comprometimento:</strong> Menor rotatividade e alta responsabilidade.</li>
+        <li><strong>Mentoria:</strong> Atuando como tutores, fortalecendo cultura e qualidade.</li>
+      </ul>
+    </section>
+
+    <!-- Cadastro -->
+    <section id="cadastroTab" class="tab card">
+      <h1>Ficha de Cadastro Profissional</h1>
+      <p class="small">Preencha seus dados para que empresas e projetos possam encontrar seu perfil.</p>
+      <form id="talentForm" novalidate>
+        <label for="nome">Nome completo *</label>
+        <input id="nome" name="nome" type="text" required placeholder="Ex.: Maria Silva" />
+
+        <div class="row">
+          <div>
+            <label for="idade">Idade *</label>
+            <input id="idade" name="idade" type="text" pattern="\d+" required placeholder="Ex.: 62" />
+          </div>
+          <div>
+            <label for="contato">Telefone / WhatsApp *</label>
+            <input id="contato" name="contato" type="tel" required placeholder="(XX) 9XXXX-XXXX" />
+          </div>
+        </div>
+
+        <label for="funcao">Função desejada *</label>
+        <input id="funcao" name="funcao" type="text" required placeholder="Ex.: Recepcionista, Consultor, Monitor" />
+
+        <label for="setor">Setores de interesse</label>
+        <select id="setor" name="setor" multiple size="5">
+          <option>Atendimento</option>
+          <option>Administração</option>
+          <option>Educação / Treinamento</option>
+          <option>Logística / Conferência</option>
+          <option>Serviços comunitários</option>
+          <option>Microempreendedorismo</option>
+          <option>Tecnologia (tarefas digitais)</option>
+        </select>
+
+        <label for="exp">Resumo da experiência profissional</label>
+        <textarea id="exp" name="exp" placeholder="Descreva funções, empresas e principais atividades"></textarea>
+
+        <label for="consent">Consentimento *</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="consent" name="consent" type="checkbox" required />
+          <label for="consent" class="small">Autorizo armazenamento das informações neste banco de talentos e contato por empresas parceiras.</label>
+        </div>
+
+        <div class="actions">
+          <button type="submit">Enviar Cadastro</button>
+          <button type="button" class="ghost" id="limpar">Limpar</button>
+        </div>
+
+        <p id="status" class="small" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- Banco de Talentos -->
+    <section id="vagasTab" class="tab card">
+      <h1>Banco de Talentos - Vagas Disponíveis</h1>
+      <div class="vaga">
+        <strong>Recepcionista</strong>
+        Local: São Paulo - SP<br>
+        Tipo: Meio período / Presencial
+      </div>
+      <div class="vaga">
+        <strong>Consultor Administrativo</strong>
+        Local: Remoto<br>
+        Tipo: Horas / Sob demanda
+      </div>
+      <div class="vaga">
+        <strong>Monitor de Cursos Online</strong>
+        Local: Remoto<br>
+        Tipo: Período integral
+      </div>
+      <div class="vaga">
+        <strong>Assistente de Logística</strong>
+        Local: Belo Horizonte - MG<br>
+        Tipo: Meio período
+      </div>
+      <div class="vaga">
+        <strong>Microempreendedor Digital</strong>
+        Local: Remoto<br>
+        Tipo: Horas / Sob demanda
+      </div>
+    </section>
+
+    <!-- Rodapé global -->
+    <footer>
+      Contato dos criadores: João (11) 91234-5678 | Maria (21) 99876-5432 | Carlos (31) 98765-4321
+    </footer>
+  </div>
+
+  <script>
+    // Troca de abas
+    document.querySelectorAll('.tablink').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('.tablink').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.target).classList.add('active');
+      });
+    });
+
+    // Função de limpar formulário
+    document.getElementById('limpar').addEventListener('click',()=>{
+      document.getElementById('talentForm').reset();
+    });
+
+    // Submissão demo
+    document.getElementById('talentForm').addEventListener('submit', e=>{
+      e.preventDefault();
+      alert('Cadastro enviado! (simulação)');
+      document.getElementById('talentForm').reset();
+    });
+
+    // Pop-up do usuário com animação
+    const userIcon = document.getElementById('userIcon');
+    const userPopup = document.getElementById('userPopup');
+
+    userIcon.addEventListener('click', () => {
+      if(userPopup.style.display === 'block'){
+        userPopup.style.opacity = 0;
+        userPopup.style.transform = 'translateY(-10px)';
+        setTimeout(()=> userPopup.style.display = 'none', 300);
+      } else {
+        userPopup.style.display = 'block';
+        setTimeout(()=>{
+          userPopup.style.opacity = 1;
+          userPopup.style.transform = 'translateY(0)';
+        }, 10);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if(!userIcon.contains(e.target) && !userPopup.contains(e.target)){
+        userPopup.style.opacity = 0;
+        userPopup.style.transform = 'translateY(-10px)';
+        setTimeout(()=> userPopup.style.display = 'none', 300);
+      }
+    });
+  </script>
+</body>
+</html>
+
